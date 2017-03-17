@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+    <!--<link href="css/style.css" rel="stylesheet">-->
+</head>
+
+<body>
+    <h1 style="text-align: center">Color Picker LED</h1>
+    <div id="colorPicker">
+        <img id="tulip" src="bg.png" style="filter: blur(10px);border: 1px solid #000;width: 100%;" />
+    </div>
+    <div id="text" style="text-align: center; margin: 20px;color: #fff;"></div>
+    <p style="text-align: center;">Switch LED <button id="ledOn">ON</button> <button id="ledOff">OFF</button></p>
+
+    <script>
+        (function() {
+            var colorPicker = document.getElementById("colorPicker")
+            var colorWidth = colorPicker.offsetWidth
+
+            colorPicker.onclick = function(event) {
+                var colorR = parseInt(1023 - (1023 / colorWidth) * (event.offsetX + event.offsetY) / 2)
+                var colorG = parseInt(1023 - (1023 / (colorWidth * 1.5)) * (Math.abs(event.offsetX - colorWidth) + Math.abs(event.offsetY - (colorWidth / 2))))
+                var colorB = parseInt(1023 - (1023 / (colorWidth * 2)) * (Math.abs(event.offsetX) + Math.abs(event.offsetY - colorWidth)))
+                document.getElementById("text").innerHTML = "COLOR IS : rgb(" + parseInt((colorR / 1023) * 255) + ',' + parseInt((colorG / 1023) * 255) + ',' + parseInt((colorB / 1023) * 255) + ")"
+                document.getElementById("text").style.backgroundColor = "rgb(" + parseInt((colorR / 1023) * 255) + ',' + parseInt((colorG / 1023) * 255) + ',' + parseInt((colorB / 1023) * 255) + ")"
+                console.log(parseInt((colorR / 1023) * 255), parseInt((colorG / 1023) * 255), parseInt((colorB / 1023) * 255))
+                $.ajax({
+                    url: '/color?cR=' + colorR + '&cG=' + colorG + '&cB=' + colorB,
+                    dataType: 'json'
+                })
+            }
+
+            $("#ledOn").on('click', function() {
+                $.ajax({
+                    url: '/pinmode?pin=on',
+                    dataType: 'json'
+                })
+            })
+            $("#ledOff").on('click', function() {
+                $.ajax({
+                    url: '/pinmode?pin=off',
+                    dataType: 'json'
+                })
+            })
+        })()
+    </script>
+</body>
+
+</html>
